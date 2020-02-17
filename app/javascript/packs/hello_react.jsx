@@ -20,6 +20,7 @@ const INIT_STATE = {
   fullDesc: null,
   detections: null,
   descriptors: null,
+  expressions: null,
   match: null
 };
 class Video extends React.Component {
@@ -47,7 +48,7 @@ class Video extends React.Component {
     // this.setState({ recorder: recorder, });
   };
   componentWillUnmount() {
-    clearInterval(this.interval);
+    // clearInterval(this.interval);
   }
 
   capture = async () => {
@@ -60,12 +61,14 @@ class Video extends React.Component {
         if (!!fullDesc) {
           this.setState({
             detections: fullDesc.map(fd => fd.detection),
-            descriptors: fullDesc.map(fd => fd.descriptor)
+            descriptors: fullDesc.map(fd => fd.descriptor),
+            expressions: fullDesc.map(fd => fd.expressions)
           });
         }else{
           this.setState({
             detections: null,
-            descriptors:null
+            descriptors:null,
+            expressions:null
           })
         }
       });
@@ -82,7 +85,7 @@ class Video extends React.Component {
     this.interval = setInterval(() => {
       this.capture();
       // console.log('capturing')
-    }, 50);
+    }, 30);
   };
 
   start = () => {
@@ -98,13 +101,20 @@ class Video extends React.Component {
       // videoURL: videoURL,
       live:false
     });
+        clearInterval(this.interval);
     // console.log(videoURL);
   };
 
   render() {
     let drawBox = null;
+    var message = (<div></div>)
     if (!!this.state.detections) {
-      // console.log('face detected')
+
+      if(!!this.state.expressions[0] &&this.state.expressions[0]['happy'] > 0.5){
+        message = (<h1>Keep Smiling!</h1>)
+      }else{
+        message = (<h1>You should smile more!</h1>)
+      }
       drawBox = this.state.detections.map((detection, i) => {
         let _H = detection.box.height;
         let _W = detection.box.width;
@@ -148,23 +158,27 @@ class Video extends React.Component {
      player = (
      <div>
                    {!!drawBox ? drawBox : null}
-       <Player url={this.webcam.stream} width="640px" height="480px" playing={true}/>)
+       <Player url={this.webcam.stream} width="640px" height="480px" playing={true}/>
 
       </div>)
     }
     return (
       <div>
-            {!!drawBox ? drawBox : null}
+            {/* {!!drawBox ? drawBox : null} */}
+            <div style={{fontSize:50}}>Input Stream!
+            <button style={{width:'70px',height:'70px'}} onClick={this.start}>PIPE</button>
+            <button style={{width:'70px',height:'70px'}} onClick={this.stop}>Stop</button>
+            </div>
             <Webcam
               ref={e => (this.webcam = e)}
               onUserMedia={this.handleUserMedia}
               audio={false}
               screenshotFormat="image/jpeg"
             />
-            <button onClick={this.start}>Start</button>
-            <button onClick={this.stop}>Stop</button>
-        {player}
 
+            <div style={{fontSize:50}}>Output Stream!</div>
+        {player}
+      {message}
       </div>
     );
   }

@@ -5,6 +5,7 @@ export async function loadModels(){
   await faceapi.loadTinyFaceDetectorModel(MODEL_URL);
   await faceapi.loadFaceLandmarkTinyModel(MODEL_URL);
   await faceapi.loadFaceRecognitionModel(MODEL_URL);
+  await faceapi.loadFaceExpressionModel(MODEL_URL)
 }
 
 export async function getFullFaceDescription(blob, inputSize = 512) {
@@ -24,6 +25,7 @@ export async function getFullFaceDescription(blob, inputSize = 512) {
   let fullDesc = await faceapi
     .detectAllFaces(img, OPTION)
     .withFaceLandmarks(useTinyModel)
-    .withFaceDescriptors();
+    .withFaceDescriptors().withFaceExpressions();
+    ;
   return fullDesc;
 }
