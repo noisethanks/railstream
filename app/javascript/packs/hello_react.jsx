@@ -35,9 +35,9 @@ class Video extends React.Component {
     await loadModels();
   }
 
-  handleUserMedia = () => {
-    const stream = this.webcam.stream;
-    console.log(stream)
+  startKinesis = () => {
+    // const stream = this.webcam.stream;
+    // console.log(stream)
 
     // console.log(stream.getVideoTracks())
     // var remoteconnection = new RTCPeerConnection()
@@ -81,27 +81,28 @@ class Video extends React.Component {
       // }
     // }
   };
-  startCapture = () => {
+  start = () => {
     this.interval = setInterval(() => {
       this.capture();
       // console.log('capturing')
     }, 30);
   };
 
-  start = () => {
+  startCapture = () => {
     this.setState({live:true})
-    this.startCapture();
+    this.start();
     // this.state.recorder.startRecording();
   };
 
-  stop = async () => {
+  stopCapture = async () => {
+    clearInterval(this.interval);
     // await this.state.recorder.stopRecording();
     // let videoURL = await this.state.recorder.getDataURL();
     this.setState({
       // videoURL: videoURL,
       live:false
     });
-        clearInterval(this.interval);
+
     // console.log(videoURL);
   };
 
@@ -159,26 +160,27 @@ class Video extends React.Component {
      <div>
                    {!!drawBox ? drawBox : null}
        <Player url={this.webcam.stream} width="640px" height="480px" playing={true}/>
-
+       {message}
       </div>)
     }
     return (
       <div>
             {/* {!!drawBox ? drawBox : null} */}
             <div style={{fontSize:50}}>Input Stream!
-            <button style={{width:'70px',height:'70px'}} onClick={this.start}>PIPE</button>
-            <button style={{width:'70px',height:'70px'}} onClick={this.stop}>Stop</button>
+            <button style={{width:'70px',height:'70px', backgroundColor:'green'}} onClick={this.startCapture}>PIPE</button>
+            <button style={{width:'70px',height:'70px', backgroundColor:'red'}} onClick={this.stopCapture}>Stop</button>
+            <button style={{width:'70px',height:'70px', backgroundColor:'red'}} onClick={this.startKinesis}>Stop</button>
             </div>
             <Webcam
               ref={e => (this.webcam = e)}
-              onUserMedia={this.handleUserMedia}
+              // onUserMedia={this.handleUserMedia}
               audio={false}
               screenshotFormat="image/jpeg"
             />
 
             <div style={{fontSize:50}}>Output Stream!</div>
         {player}
-      {message}
+
       </div>
     );
   }
