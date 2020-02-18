@@ -5,4 +5,6 @@ Rails.application.routes.draw do
   get 'initial', to: 'events#initialget'
 
   post 'initial', to: 'events#initialpost'
+
+  get 'getKinesisStream', to: 'events#getKinesisStream'
 end
